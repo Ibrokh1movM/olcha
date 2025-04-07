@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Category - Online Shop{% endblock %}
+
+{% block content %}
+    <div class="container my-5">
+        <h1 class="text-center mb-4">Edit Category: {{ category.name }}</h1>
+    
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert {% if message.tags == 'success' %}alert-success{% else %}alert-danger{% endif %} alert-dismissible fade show"
+                     role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    
+        <div class="card shadow-sm p-4">
+            <form method="POST">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="name" class="form-label">Name</label>
+                    <input type="text" name="name" id="name" class="form-control" value="{{ category.name }}" required>
+                </div>
+                <div class="mb-3">
+                    <label for="parent" class="form-label">Parent Category (Optional)</label>
+                    <select name="parent" id="parent" class="form-control">
+                        <option value="">None</option>
+                        {% for cat in categories %}
+                            <option value="{{ cat.id }}" {% if cat.id == category.parent.id %}selected{% endif %}>
+                                {{ cat.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="slug" class="form-label">Slug</label>
+                    <input type="text" name="slug" id="slug" class="form-control" value="{{ category.slug }}" required>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Update Category</button>
+            </form>
+            <a href="{% url 'category_manage' %}" class="btn btn-secondary w-100 mt-2">Cancel</a>
+        </div>
+    </div>
+{% endblock %}

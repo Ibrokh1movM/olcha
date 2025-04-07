@@ -1,0 +1,154 @@
+
+/* Umumiy stillar */
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #f5f7fa;
+}
+
+/* Navbar stillari */
+.navbar {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-nav .nav-link {
+    transition: color 0.3s;
+}
+
+.navbar-nav .nav-link:hover {
+    color: #00d4ff !important;
+}
+
+/* Mahsulot kartalari */
+.product-card {
+    transition: transform 0.3s, box-shadow 0.3s;
+    border: none;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.product-card img:hover {
+    transform: scale(1.05);
+}
+
+.card-body {
+    padding: 15px;
+}
+
+.card-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #333;
+}
+
+.card-text {
+    font-size: 0.9rem;
+}
+
+/* Gradient tugmalar */
+.gradient-btn {
+    background: linear-gradient(45deg, #007bff, #00d4ff);
+    border: none;
+    transition: background 0.3s;
+}
+
+.gradient-btn:hover {
+    background: linear-gradient(45deg, #0056b3, #00aaff);
+}
+
+/* Kategoriyalar sidebar */
+.list-group-item {
+    border: none;
+    border-radius: 5px;
+    margin-bottom: 5px;
+    transition: background 0.3s;
+}
+
+.list-group-item:hover {
+    background-color: #e9ecef;
+}
+
+.list-group-item.active {
+    background-color: #007bff;
+    color: white;
+}
+
+/* Footer stillari */
+footer {
+    background: linear-gradient(90deg, #1a1a1a, #343a40);
+    border-top: 4px solid #007bff;
+}
+
+footer a {
+    color: #00d4ff;
+    transition: color 0.3s;
+}
+
+footer a:hover {
+    color: #fff;
+}
+
+/* Xabarlar */
+.alert {
+    border-radius: 8px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Cart jadvali */
+.table-modern {
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.table-modern th, .table-modern td {
+    vertical-align: middle;
+    padding: 15px;
+}
+
+.table-modern th {
+    background: linear-gradient(45deg, #007bff, #00d4ff);
+    color: white;
+}
+
+.table-modern td form {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.table-modern td input[type="number"] {
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.table-modern td .btn-primary {
+    padding: 5px 10px;
+}
+
+.table-modern td .btn-danger {
+    padding: 5px 10px;
+}
+
+.product-container.loading::after {
+    content: "Loading...";
+    display: block;
+    text-align: center;
+    padding: 20px;
+    font-size: 1.2rem;
+    color: #007bff;
+}
+
+.favorite-btn {
+    transition: transform 0.3s ease;
+}
+
+.favorite-btn:hover {
+    transform: scale(1.2);
+}

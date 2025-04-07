@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Product - Online Shop{% endblock %}
+
+{% block content %}
+    <div class="container my-5">
+        <h1 class="text-center mb-4">Edit Product: {{ product.name }}</h1>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert {% if message.tags == 'success' %}alert-success{% else %}alert-danger{% endif %} alert-dismissible fade show"
+                     role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <div class="card shadow-sm p-4">
+            <form method="POST">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="name" class="form-label">Name</label>
+                    <input type="text" name="name" id="name" class="form-control" value="{{ product.name }}" required>
+                </div>
+                <div class="mb-3">
+                    <label for="category" class="form-label">Category</label>
+                    <select name="category" id="category" class="form-control" required>
+                        {% for category in categories %}
+                            <option value="{{ category.id }}"
+                                    {% if category.id == product.category.id %}selected{% endif %}>
+                                {{ category.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="price" class="form-label">Price</label>
+                    <input type="number" name="price" id="price" class="form-control" step="0.01"
+                           value="{{ product.price }}" required>
+                </div>
+                <div class="mb-3">
+                    <label for="discount" class="form-label">Discount (%)</label>
+                    <input type="number" name="discount" id="discount" class="form-control" step="0.01"
+                           value="{{ product.discount }}">
+                </div>
+                <div class="mb-3">
+                    <label for="description" class="form-label">Description</label>
+                    <textarea name="description" id="description" class="form-control" rows="3"
+                              required>{{ product.description }}</textarea>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Update Product</button>
+            </form>
+            <a href="{% url 'product_manage' %}" class="btn btn-secondary w-100 mt-2">Cancel</a>
+        </div>
+    </div>
+{% endblock %}

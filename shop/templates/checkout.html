@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+{% load cart_tags %}
+
+{% block title %}Checkout - Online Shop{% endblock %}
+
+{% block content %}
+    <div class="container my-5">
+        <h1 class="text-center mb-4">Checkout</h1>
+
+        {% if error %}
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                {{ error }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endif %}
+    
+        {% if cart_items %}
+            <div class="table-responsive mb-4">
+                <table class="table table-striped table-bordered">
+                    <thead class="table-dark">
+                    <tr>
+                        <th>Product</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                        <th>Total</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for item in cart_items %}
+                        <tr>
+                            <td>{{ item.product.name }}</td>
+                            <td>${{ item.product.final_price|floatformat:2 }}</td>
+                            <td>{{ item.quantity }}</td>
+                            <td>${{ item.product.final_price|multiply:item.quantity|floatformat:2 }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                    <tfoot>
+                    <tr>
+                        <td colspan="3" class="text-end"><strong>Total:</strong></td>
+                        <td><strong>${{ total_price|floatformat:2 }}</strong></td>
+                    </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+            <div class="card shadow-sm p-4">
+                <h3 class="mb-3">Payment Details</h3>
+                <form method="POST" id="payment-form">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="card-element" class="form-label">Credit or Debit Card</label>
+                        <div id="card-element" class="form-control p-3"
+                             style="border: 1px solid #ced4da; border-radius: 0.25rem;"></div>
+                        <div id="card-errors" class="text-danger mt-2" role="alert"></div>
+                    </div>
+                    <button type="submit" class="btn btn-success w-100">Pay ${{ total_price|floatformat:2 }}</button>
+                </form>
+            </div>
+        {% else %}
+            <div class="text-center">
+                <p class="text-muted">Your cart is empty.</p>
+                <a href="{% url 'home' %}" class="btn btn-primary">Continue Shopping</a>
+            </div>
+        {% endif %}
+    </div>
+
+    <script src="https://js.stripe.com/v3/"></script>
+    <script>
+        var stripe = Stripe('{{ stripe_publishable_key }}');
+        var elements = stripe.elements();
+        var card = elements.create('card', {
+            style: {
+                base: {
+                    fontSize: '16px',
+                    color: '#32325d',
+                    '::placeholder': {
+                        color: '#aab7c4'
+                    }
+                },
+                invalid: {
+                    color: '#dc3545',
+                    iconColor: '#dc3545'
+                }
+            }
+        });
+        card.mount('#card-element');
+
+        var form = document.getElementById('payment-form');
+        var errorElement = document.getElementById('card-errors');
+
+        card.addEventListener('change', function (event) {
+            if (event.error) {
+                errorElement.textContent = event.error.message;
+            } else {
+                errorElement.textContent = '';
+            }
+        });
+
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();
+            stripe.createPaymentMethod({
+                type: 'card',
+                card: card
+            }).then(function (result) {
+                if (result.error) {
+                    errorElement.textContent = result.error.message;
+                } else {
+                    fetch('/checkout/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': '{{ csrf_token }}'
+                        },
+                        body: JSON.stringify({
+                            payment_method: result.paymentMethod.id
+                        })
+                    }).then(response => response.json()).then(data => {
+                        if (data.error) {
+                            errorElement.textContent = data.error;
+                        } else {
+                            window.location.href = '/cart/';
+                        }
+                    }).catch(error => {
+                        errorElement.textContent = 'An error occurred. Please try again.';
+                    });
+                }
+            });
+        });
+    </script>
+{% endblock %}

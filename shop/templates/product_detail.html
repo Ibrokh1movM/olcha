@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% block title %}{{ product.name }} - Online Shop{% endblock %}
+{% block content %}
+    <div class="row">
+        <div class="col-md-6">
+            <div id="productCarousel" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                    {% for image in product.images.all %}
+                        <div class="carousel-item {% if image.is_primary %}active{% endif %}">
+                            <img src="{{ image.image.url }}" class="d-block w-100" alt="{{ product.name }}"
+                                 loading="lazy" style="height: 400px; object-fit: cover;">
+                        </div>
+                    {% endfor %}
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#productCarousel"
+                        data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#productCarousel"
+                        data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <h2>{{ product.name }}</h2>
+            <p class="text-muted">{{ product.description }}</p>
+            <h4>
+                <strong>${{ product.final_price|floatformat:2 }}</strong>
+                {% if product.discount > 0 %}
+                    <small class="text-muted">
+                        <del>${{ product.price }}</del>
+                    </small>
+                {% endif %}
+            </h4>
+            <div class="d-flex mb-3">
+                <a href="{% url 'add_to_cart' product.id %}" class="btn btn-primary me-2">Add to Cart</a>
+                <a href="{% url 'add_to_favorites' product.id %}" class="btn btn-outline-danger">
+                    {% if request.user in product.favorites.all %}❤️{% else %}🤍{% endif %}
+                </a>
+            </div>
+        </div>
+    </div>
+    <!-- Related Products -->
+    {% if related_products %}
+        <h3 class="mt-5">Related Products</h3>
+        <div class="row">
+            {% for related in related_products %}
+                <div class="col-md-3 mb-4">
+                    <div class="card shadow-sm">
+                        <a href="{% url 'product_detail' related.slug %}">
+                            {% for image in related.images.all %}
+                                {% if image.is_primary %}
+                                    <img src="{{ image.image.url }}" class="card-img-top" alt="{{ related.name }}"
+                                         loading="lazy" style="height: 150px; object-fit: cover;">
+                                {% endif %}
+                            {% endfor %}
+                        </a>
+                        <div class="card-body">
+                            <h5 class="card-title">{{ related.name }}</h5>
+                            <p class="card-text">
+                                <strong>${{ related.final_price|floatformat:2 }}</strong>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endblock %}

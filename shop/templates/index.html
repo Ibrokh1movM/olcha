@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+{% block title %}Home - Online Shop{% endblock %}
+{% block content %}
+    <h1 class="text-center mb-4">Welcome to Online Shop</h1>
+    {% if request.GET.search %}
+        <p class="text-center text-muted">Search results for: <strong>{{ request.GET.search }}</strong></p>
+    {% endif %}
+    <div class="row">
+        <!-- Categories Sidebar -->
+        <div class="col-md-3">
+            <h3>Categories</h3>
+            <ul class="list-group">
+                <li class="list-group-item">
+                    <a href="{% url 'home' %}" class="{% if not request.GET.category %}active{% endif %}">All</a>
+                </li>
+                {% for category in categories %}
+                    <li class="list-group-item">
+                        <a href="{% url 'home' %}?category={{ category.id }}"
+                           class="{% if request.GET.category == category.id|stringformat:'s' %}active{% endif %}">{{ category.name }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <!-- Products -->
+        <div class="col-md-9">
+            <div class="row">
+                {% for product in page_obj %}
+                    <div class="col-md-4 mb-4">
+                        <div class="card shadow-sm">
+                            <a href="
+                                    {% if product.slug %}{% url 'product_detail' product.slug %}{% else %}#{% endif %}">
+                                {% for image in product.images.all %}
+                                    {% if image.is_primary %}
+                                        <img src="{{ image.image.url }}" class="card-img-top" alt="{{ product.name }}"
+                                             loading="lazy" style="height: 200px; object-fit: cover;">
+                                    {% endif %}
+                                {% endfor %}
+                            </a>
+                            <div class="card-body">
+                                <h5 class="card-title">{{ product.name }}</h5>
+                                <p class="card-text text-muted">{{ product.description|truncatewords:10 }}</p>
+                                <p class="card-text">
+                                    <strong>${{ product.final_price|floatformat:2 }}</strong>
+                                </p>
+                                {% if request.user.is_authenticated %}
+                                    <div class="d-flex justify-content-between">
+                                        <a href="{% url 'add_to_cart' product.id %}" class="btn btn-primary btn-sm">Add
+                                            to
+                                            Cart</a>
+                                        <a href="{% url 'add_to_favorites' product.id %}"
+                                           class="btn btn-outline-danger btn-sm">
+                                            {% if request.user in product.favorites.all %}❤️{% else %}🤍{% endif %}
+                                        </a>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="col-12 text-center">
+                        <p>No products found.</p>
+                    </div>
+                {% endfor %}
+            </div>
+            <!-- Pagination -->
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link"
+                               href="?page=1{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}"
+                               aria-label="First">
+                                <span aria-hidden="true">«</span>
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page=
+                                    
+                                    
+                                    {{ page_obj.previous_page_number }}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}"
+                               aria-label="Previous">
+                                <span aria-hidden="true">‹</span>
+                            </a>
+                        </li>
+                    {% endif %}
+
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if num > page_obj.number|add:-3 and num < page_obj.number|add:3 %}
+                            <li class="page-item {% if page_obj.number == num %}active{% endif %}">
+                                <a class="page-link" href="?page=
+                                        
+                                        
+                                        {{ num }}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">{{ num }}</a>
+                            </li>
+                        {% elif num == 1 or num == page_obj.paginator.num_pages %}
+                            <li class="page-item {% if page_obj.number == num %}active{% endif %}">
+                                <a class="page-link" href="?page=
+                                        
+                                        
+                                        {{ num }}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">{{ num }}</a>
+                            </li>
+                        {% elif num == page_obj.number|add:-3 or num == page_obj.number|add:2 %}
+                            <li class="page-item disabled">
+                                <span class="page-link">...</span>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page=
+                                    
+                                    
+                                    {{ page_obj.next_page_number }}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}"
+                               aria-label="Next">
+                                <span aria-hidden="true">›</span>
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page=
+                                    
+                                    
+                                    {{ page_obj.paginator.num_pages }}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}"
+                               aria-label="Last">
+                                <span aria-hidden="true">»</span>
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </div>
+{% endblock %}
